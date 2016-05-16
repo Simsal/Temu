@@ -37,7 +37,6 @@ public class MainApplication {
 		}
 		//serialPort.setComPortParameters(9600, 8, 1, SerialPort.NO_PARITY);
 		serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0);
-
 		Scanner data = new Scanner(serialPort.getInputStream());
 		int value = 0;
 		while(data.hasNextLine()){

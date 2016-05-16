@@ -45,7 +45,8 @@ public class Startfenster {
 		window.add(searchDevices, BorderLayout.PAGE_END);
 		
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setSize(800, 300);
+//		window.setSize(800, 300);
+		window.pack();
 		window.setVisible(true);
 	}
 	

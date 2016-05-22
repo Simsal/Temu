@@ -1,5 +1,6 @@
 package gui;
 
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -20,21 +21,21 @@ public class Startfenster {
 		window = new JFrame(name);
 		window.setLayout(new BorderLayout());
 		
-		description1 = new JLabel("Derzeit ist kein Gerät verbunden. Stellen Sie eine Verbindung zu Ihrem Gerät her.");
+		description1 = new JLabel("Derzeit ist kein Gerï¿½t verbunden. Stellen Sie eine Verbindung zu Ihrem Gerï¿½t her.");
 		window.add(description1, BorderLayout.PAGE_START);
 		
 		centerPanel = new JPanel();
 		centerPanel.setLayout(new GridLayout(2, 1));
 		
-		plugDevice = new JLabel("1. Gerät anschliesen.");
+		plugDevice = new JLabel("1. Gerï¿½t anschliesen.");
 		centerPanel.add(plugDevice);
 		
-		startConnection = new JLabel("2. Verbindungssuche über Software starten.");
+		startConnection = new JLabel("2. Verbindungssuche ï¿½ber Software starten.");
 		centerPanel.add(startConnection);
 		
 		window.add(centerPanel, BorderLayout.CENTER);
 		
-		searchDevices = new JButton("Gerät suchen");
+		searchDevices = new JButton("Gerï¿½t suchen");
 		searchDevices.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {

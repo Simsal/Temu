@@ -1,9 +1,9 @@
 package gui;
 
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,9 +21,10 @@ public class ConfigurationWindow implements ActionListener {
 	public ConfigurationWindow(SerialPort serialport) {
 		chosenPort = serialport;
 		window =  new JFrame("Konfiguration von " +chosenPort.getDescriptivePortName());
+			window =  new JFrame("Konfiguration von " );
 		window.setLayout(new GridLayout(4, 2));
 		
-		deviceLabel = new JLabel("Verbundenes Gerät");
+		deviceLabel = new JLabel("Verbundenes Gerï¿½t");
 		window.add(deviceLabel);
 		
 		device = new JLabel(chosenPort.getDescriptivePortName());
@@ -66,8 +67,8 @@ public class ConfigurationWindow implements ActionListener {
 	private String getStatus() {
 		// TODO Auto-generated method stub
 		String getReading = "00000101";
-		chosenPort.readBytes(getReading.getBytes(), 8);
-		return "Läuft bei uns!";
+//		chosenPort.readBytes(getReading.getBytes(), 8);
+		return "Lï¿½uft bei uns!";
 	}
 	private String getCurrentReading() {
 		// TODO Auto-generated method stub
@@ -81,18 +82,6 @@ public class ConfigurationWindow implements ActionListener {
 			new SimulationWindow(chosenPort);
 		}
 		
-		//Delete
-		if((JButton) e.getSource() == tempButton){
-			Scanner data = new Scanner(chosenPort.getInputStream());
-			System.out.println("start");
-			System.out.println(data.hasNextLine());
-			while(data.hasNextLine()){
-				try{
-					System.out.println(data.nextLine());
-					}
-				catch(Exception f){}
-		}
-		}
 	}
 
 }

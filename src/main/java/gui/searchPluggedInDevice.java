@@ -1,5 +1,6 @@
 package gui;
 
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,11 +26,11 @@ public class searchPluggedInDevice implements ActionListener {
 	JOptionPane errorMessage;
 
 	public searchPluggedInDevice() {
-		window = new JFrame("Ergebnis Gerätesuche");
+		window = new JFrame("Ergebnis Gerï¿½tesuche");
 
 		window.setLayout(new GridLayout(2, 2));
 
-		description = new JLabel("Folgende Geräte wurden gefunden:");
+		description = new JLabel("Folgende Gerï¿½te wurden gefunden:");
 		window.add(description);
 
 		listOfDevices = new JComboBox<String>();

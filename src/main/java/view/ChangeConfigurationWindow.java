@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,11 +14,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import model.ConfigurationInformation;
+
 import com.fazecast.jSerialComm.SerialPort;
 
 import controller.CommunicationInterface;
 import controller.CommunicationMethodsImplementation;
-import model.ConfigurationInformation;
 
 public class ChangeConfigurationWindow implements ActionListener {
 
@@ -142,8 +144,11 @@ public class ChangeConfigurationWindow implements ActionListener {
 				else {
 					
 					fillNewModel();
+					window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					if (communicationInterface.newConfiguration(connectedPort, newModel) == true){
+						window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						JOptionPane.showMessageDialog(new JOptionPane(), "Konfiguration erfolgreich übertragen.");
+						
 						window.dispose();
 					}
 					else {

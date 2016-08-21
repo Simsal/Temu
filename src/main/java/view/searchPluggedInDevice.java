@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -110,9 +111,11 @@ public class searchPluggedInDevice implements ActionListener {
 	}
 
 	private void connectToChosenDevice() {
+		window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		SerialPort serialPort = ports[listOfDevices.getSelectedIndex()];
 		System.out.println(ports[listOfDevices.getSelectedIndex()].getDescriptivePortName());
 		if(serialPort.openPort()){
+			window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			System.out.println( serialPort.getDescriptivePortName() +" opened successfully.");
 			new OverviewWindow(serialPort);
 		}

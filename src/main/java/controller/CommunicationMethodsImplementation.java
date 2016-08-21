@@ -5,19 +5,20 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-import com.fazecast.jSerialComm.SerialPort;
-
 import model.ConfigurationInformation;
 
-public class CommunicationMethodsImplementation implements CommunicationInterface {
+import com.fazecast.jSerialComm.SerialPort;
 
-	String readConfigurationCommand = "00000001";
-	String getCurentMeasurementValueCommand = "00000102";
-	String getStatusCommand = "00000103";
-	String newConfigurationCommand = "00000104";
-	String newSimulationCommand = "00000105";
-	String stopSimulationCommand = "00000106";
-	String stopTMUCommand = "00000107";
+public class CommunicationMethodsImplementation implements
+		CommunicationInterface {
+
+	String readConfigurationCommand = "1";
+	String getCurentMeasurementValueCommand = "2";
+	String getStatusCommand = "3";
+	String newConfigurationCommand = "4";
+	String newSimulationCommand = "5";
+	String stopSimulationCommand = "6";
+	String stopTMUCommand = "7";
 
 	public ConfigurationInformation readConfiguration(SerialPort connectedPort) {
 
@@ -31,22 +32,29 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 		currentConfiguration.setMeasurementValueStartUnity("°C");
 
 		if (connectedPort.isOpen()) {
-			if (connectedPort.writeBytes(readConfigurationCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+			if (connectedPort.writeBytes(
+					readConfigurationCommand.getBytes(StandardCharsets.UTF_8),
+					8) != -1) {
 				System.out.println("Bytes geschrieben: "
-						+ new String(readConfigurationCommand.getBytes(), StandardCharsets.UTF_8));
+						+ new String(readConfigurationCommand.getBytes(),
+								StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 
 			try {
 				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes:" + connectedPort.bytesAvailable());
+					System.out.println("Verfügbare Bytes:"
+							+ connectedPort.bytesAvailable());
 
 					Thread.sleep(500);
 				}
-				System.out.println("nach Pause verfügbare Bytes: " + connectedPort.bytesAvailable());
+				System.out.println("nach Pause verfügbare Bytes: "
+						+ connectedPort.bytesAvailable());
 				response = data.nextLine();
-				System.out.println("Antwort: " + new String(response.getBytes(), StandardCharsets.UTF_8));
+				System.out.println("Antwort: "
+						+ new String(response.getBytes(),
+								StandardCharsets.UTF_8));
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -63,10 +71,13 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 						String help = data.nextLine();
 						System.out.println("help: " + help);
 						currentConfiguration.setMeasurementValueStart(help);
-						System.out.println("Messwertbeginn: " + currentConfiguration.getMeasurementValueStart());
+						System.out.println("Messwertbeginn: "
+								+ currentConfiguration
+										.getMeasurementValueStart());
 					}
 					if (counter == 1) {
-						currentConfiguration.setMeasurementValueEnd(data.nextLine());
+						currentConfiguration.setMeasurementValueEnd(data
+								.nextLine());
 					}
 					if (counter == 2) {
 						String message = data.nextLine();
@@ -103,15 +114,19 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(getCurentMeasurementValueCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+			if (connectedPort.writeBytes(getCurentMeasurementValueCommand
+					.getBytes(StandardCharsets.UTF_8), 8) != -1) {
 				System.out.println("Bytes geschrieben: "
-						+ new String(getCurentMeasurementValueCommand.getBytes(), StandardCharsets.UTF_8));
+						+ new String(getCurentMeasurementValueCommand
+								.getBytes(), StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 
 			try {
 				while (connectedPort.bytesAvailable() == 0) {
+					System.out.println("Verfügbare Bytes: "
+							+ connectedPort.bytesAvailable());
 
 					Thread.sleep(500);
 				}
@@ -152,15 +167,18 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(getStatusCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println(
-						"Bytes geschrieben: " + new String(getStatusCommand.getBytes(), StandardCharsets.UTF_8));
+			if (connectedPort.writeBytes(
+					getStatusCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				System.out.println("Bytes geschrieben: "
+						+ new String(getStatusCommand.getBytes(),
+								StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 			try {
 				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes:" + connectedPort.bytesAvailable());
+					System.out.println("Verfügbare Bytes:"
+							+ connectedPort.bytesAvailable());
 					Thread.sleep(500);
 				}
 				response = data.nextLine();
@@ -205,7 +223,8 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 	}
 
-	public boolean newConfiguration(SerialPort connectedPort, ConfigurationInformation newConfiguration) {
+	public boolean newConfiguration(SerialPort connectedPort,
+			ConfigurationInformation newConfiguration) {
 		System.out.println(newConfiguration.toString());
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
@@ -234,37 +253,15 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 			if (response.equals("4")) {
 
 				if (connectedPort.writeBytes(
-						newConfiguration.getMeasurementValueStart().getBytes(StandardCharsets.UTF_8), 8) != -1) {
-					connectedPort.writeBytes("e".getBytes(), 8);
-					System.out.println("Bytes geschrieben: " + new String(
-							newConfiguration.getMeasurementValueStart().getBytes(), StandardCharsets.UTF_8));
-					System.out.println("Bytes geschrieben: " + new String("e".getBytes()));
-				} else {
-					System.out.println("Fehler beim Bytes schreiben.");
-				}
-
-				try {
-					while (connectedPort.bytesAvailable() == 0) {
-
-						Thread.sleep(500);
-					}
-					System.out.println("nach Pause verfügbare Bytes: " + connectedPort.bytesAvailable());
-					response = "";
-					response = data.nextLine();
-					System.out.println("Antwort: " + response);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-
-			}
-			if (response.equals("4")) {
-
-				if (connectedPort.writeBytes(newConfiguration.getMeasurementValueEnd().getBytes(StandardCharsets.UTF_8),
-						8) != -1) {
+						newConfiguration.getMeasurementValueStart().getBytes(
+								StandardCharsets.UTF_8), 8) != -1) {
 					connectedPort.writeBytes("e".getBytes(), 8);
 					System.out.println("Bytes geschrieben: "
-							+ new String(newConfiguration.getMeasurementValueEnd().getBytes(), StandardCharsets.UTF_8));
-					System.out.println("Bytes geschrieben: " + new String("e".getBytes()));
+							+ new String(newConfiguration
+									.getMeasurementValueStart().getBytes(),
+									StandardCharsets.UTF_8));
+					System.out.println("Bytes geschrieben: "
+							+ new String("e".getBytes()));
 				} else {
 					System.out.println("Fehler beim Bytes schreiben.");
 				}
@@ -274,7 +271,39 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 						Thread.sleep(500);
 					}
-					System.out.println("nach Pause verfügbare Bytes: " + connectedPort.bytesAvailable());
+					System.out.println("nach Pause verfügbare Bytes: "
+							+ connectedPort.bytesAvailable());
+					response = "";
+					response = data.nextLine();
+					System.out.println("Antwort: " + response);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+
+			}
+			if (response.equals("4")) {
+
+				if (connectedPort.writeBytes(
+						newConfiguration.getMeasurementValueEnd().getBytes(
+								StandardCharsets.UTF_8), 8) != -1) {
+					connectedPort.writeBytes("e".getBytes(), 8);
+					System.out.println("Bytes geschrieben: "
+							+ new String(newConfiguration
+									.getMeasurementValueEnd().getBytes(),
+									StandardCharsets.UTF_8));
+					System.out.println("Bytes geschrieben: "
+							+ new String("e".getBytes()));
+				} else {
+					System.out.println("Fehler beim Bytes schreiben.");
+				}
+
+				try {
+					while (connectedPort.bytesAvailable() == 0) {
+
+						Thread.sleep(500);
+					}
+					System.out.println("nach Pause verfügbare Bytes: "
+							+ connectedPort.bytesAvailable());
 					response = "";
 					response = data.nextLine();
 					System.out.println("Antwort: " + response);
@@ -286,11 +315,15 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 			}
 			if (response.equals("4")) {
 
-				if (connectedPort.writeBytes(newFailureBehaviour.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				if (connectedPort
+						.writeBytes(newFailureBehaviour
+								.getBytes(StandardCharsets.UTF_8), 8) != -1) {
 					connectedPort.writeBytes("e".getBytes(), 8);
-					System.out.println(
-							"Bytes geschrieben: " + new String(newFailureBehaviour.getBytes(), StandardCharsets.UTF_8));
-					System.out.println("Bytes geschrieben: " + new String("e".getBytes()));
+					System.out.println("Bytes geschrieben: "
+							+ new String(newFailureBehaviour.getBytes(),
+									StandardCharsets.UTF_8));
+					System.out.println("Bytes geschrieben: "
+							+ new String("e".getBytes()));
 				} else {
 					System.out.println("Fehler beim Bytes schreiben.");
 				}
@@ -300,12 +333,12 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 						Thread.sleep(500);
 					}
-					System.out.println("nach Pause verfügbare Bytes: " + connectedPort.bytesAvailable());
+					System.out.println("nach Pause verfügbare Bytes: "
+							+ connectedPort.bytesAvailable());
 					response = "";
 					response = data.nextLine();
 					System.out.println("Antwort: " + response);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
@@ -315,10 +348,12 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 			}
 
 		}
+		data.close();
 		return false;
 	}
 
-	public boolean newSimulation(SerialPort connectedPort, String simulatedTemperature) {
+	public boolean newSimulation(SerialPort connectedPort,
+			String simulatedTemperature) {
 		// System.out.println(simulatedTemperature);
 		// int newTemperature = Integer.valueOf(simulatedTemperature);
 		// System.out.println(newTemperature);
@@ -328,7 +363,7 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 		Scanner data = new Scanner(connectedPort.getInputStream());
 
 		if (connectedPort.isOpen()) {
-			
+
 			connectedPort.writeBytes(newSimulationCommand.getBytes(), 8);
 
 			try {
@@ -347,8 +382,9 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 			if (response.equals("5")) {
 				connectedPort.writeBytes(simulatedTemperature.getBytes(), 8);
 				connectedPort.writeBytes("e".getBytes(), 8);
-				System.out.println(
-						"Bytes geschrieben: " + new String(simulatedTemperature.getBytes(), StandardCharsets.UTF_8));
+				System.out.println("Bytes geschrieben: "
+						+ new String(simulatedTemperature.getBytes(),
+								StandardCharsets.UTF_8));
 
 			}
 			try {
@@ -374,9 +410,11 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(stopSimulationCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println(
-						"Bytes geschrieben: " + new String(stopSimulationCommand.getBytes(), StandardCharsets.UTF_8));
+			if (connectedPort.writeBytes(
+					stopSimulationCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				System.out.println("Bytes geschrieben: "
+						+ new String(stopSimulationCommand.getBytes(),
+								StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
@@ -385,7 +423,6 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 				while (connectedPort.bytesAvailable() == 0) {
 					Thread.sleep(500);
 				}
-				response = null;
 				response = data.nextLine();
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
@@ -404,9 +441,11 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(stopTMUCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println(
-						"Bytes geschrieben: " + new String(stopTMUCommand.getBytes(), StandardCharsets.UTF_8));
+			if (connectedPort.writeBytes(
+					stopTMUCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				System.out.println("Bytes geschrieben: "
+						+ new String(stopTMUCommand.getBytes(),
+								StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}

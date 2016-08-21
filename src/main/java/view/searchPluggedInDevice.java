@@ -111,6 +111,7 @@ public class searchPluggedInDevice implements ActionListener {
 
 	private void connectToChosenDevice() {
 		SerialPort serialPort = ports[listOfDevices.getSelectedIndex()];
+		System.out.println(ports[listOfDevices.getSelectedIndex()].getDescriptivePortName());
 		if(serialPort.openPort()){
 			System.out.println( serialPort.getDescriptivePortName() +" opened successfully.");
 			new OverviewWindow(serialPort);

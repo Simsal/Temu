@@ -99,6 +99,7 @@ public class CommunicationMethodsImplementation implements
 			
 			resetAVR(connectedPort);
 			readConfiguration(connectedPort);
+			
 		}
 		data.close();
 
@@ -429,10 +430,7 @@ public class CommunicationMethodsImplementation implements
 		return false;
 	}
 
-	public boolean resetAVR(SerialPort connectedPort) {
-
-		String response = null;
-		Scanner data = new Scanner(connectedPort.getInputStream());
+	public void resetAVR(SerialPort connectedPort) {
 
 		if (connectedPort.isOpen()) {
 
@@ -445,22 +443,6 @@ public class CommunicationMethodsImplementation implements
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					Thread.sleep(500);
-				}
-				response = null;
-				response = data.nextLine();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
 		}
-		if (response.equals("re")) {
-			System.out.println(response.equals("re"));
-			data.close();
-			return true;
-		}
-		data.close();
-		return false;
 	}
 }

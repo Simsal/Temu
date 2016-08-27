@@ -20,6 +20,6 @@ public interface CommunicationInterface {
 	
 	boolean closeTMU ( SerialPort connectedPort);
 	
-	boolean resetAVR ( SerialPort connectedPort);
+	void resetAVR ( SerialPort connectedPort);
 
 }

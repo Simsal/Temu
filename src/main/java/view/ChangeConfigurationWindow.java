@@ -1,3 +1,5 @@
+//Konfiguration anpassen
+
 package view;
 
 import java.awt.Cursor;

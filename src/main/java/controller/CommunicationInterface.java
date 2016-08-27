@@ -19,5 +19,7 @@ public interface CommunicationInterface {
 	boolean stopSimulation(SerialPort connectedPort);
 	
 	boolean closeTMU ( SerialPort connectedPort);
+	
+	boolean resetAVR ( SerialPort connectedPort);
 
 }

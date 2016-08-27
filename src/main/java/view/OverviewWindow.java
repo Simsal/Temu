@@ -1,3 +1,5 @@
+//Übersichtsfenster nach Herstellen der Verbindung mit dem Gerät
+
 package view;
 
 import java.awt.Cursor;
@@ -20,6 +22,7 @@ import controller.CommunicationInterface;
 import controller.CommunicationMethodsImplementation;
 
 public class OverviewWindow implements ActionListener {
+	//Variablendefinition für die Fensterinhalte
 	SerialPort chosenPort;
 	JFrame window;
 	JButton configurate, simulate, refresh, stopConfiguration;
@@ -28,7 +31,9 @@ public class OverviewWindow implements ActionListener {
 			emptyLabel5;
 	JPanel tempPanel;
 
+	//Konfigurationsinhalte
 	ConfigurationInformation localModel;
+	// Methoden für die Kommunikation mit Microcontroller
 	CommunicationInterface communicationInterface = new CommunicationMethodsImplementation();
 
 	public OverviewWindow(SerialPort serialport) {
@@ -134,13 +139,13 @@ public class OverviewWindow implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if ((JButton) e.getSource() == configurate) {
 			window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			new ChangeConfigurationWindow(chosenPort);
+			new ChangeConfigurationWindow(chosenPort); //Konfigurationsfenster
 			window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 		}
 		if ((JButton) e.getSource() == simulate) {
 			window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			new SimulationWindow(chosenPort);
+			new SimulationWindow(chosenPort); //Simulationsfenster
 			window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		if ((JButton) e.getSource() == refresh) {

@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import com.fazecast.jSerialComm.SerialPort;
 
 public class searchPluggedInDevice implements ActionListener {
+	// Variablendefinition für Fensterinhalte des Startfensters
 	ArrayList<String> foundDevices = new ArrayList<String>();
 	SerialPort[] ports;
 	JFrame window;
@@ -27,10 +28,10 @@ public class searchPluggedInDevice implements ActionListener {
 	JPanel topPanel, bottomPanel, centerPanel, panel;
 	JOptionPane errorMessage;
 
-	public searchPluggedInDevice() {
+	public searchPluggedInDevice() { // Konstruktor zum Erzeugen des Fensters
 		window = new JFrame("Konfigurationssoftware T-MU");
 
-		window.setLayout(new BorderLayout());
+		window.setLayout(new BorderLayout()); // Anordnung im Fenster
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(new BorderLayout());
@@ -58,7 +59,7 @@ public class searchPluggedInDevice implements ActionListener {
 		description.setBorder(new EmptyBorder(10, 10, 10, 10));
 		bottomPanel.add(description);
 
-		listOfDevices = new JComboBox<String>();
+		listOfDevices = new JComboBox<String>(); //Drop Down Menü
 		fillComboBox();
 
 		panel = new JPanel();
@@ -84,7 +85,7 @@ public class searchPluggedInDevice implements ActionListener {
 	}
 
 	public void findDevices() {
-		ports = SerialPort.getCommPorts();
+		ports = SerialPort.getCommPorts(); //Ports auslesen
 
 		for (SerialPort port : ports) {
 			foundDevices.add(port.getDescriptivePortName());
@@ -100,7 +101,7 @@ public class searchPluggedInDevice implements ActionListener {
 		}
 	}
 
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) { 	//Actionlistener für Buttons
 		if ((JButton) e.getSource() == refreshComboBox) {
 			fillComboBox();
 		}
@@ -111,13 +112,13 @@ public class searchPluggedInDevice implements ActionListener {
 	}
 
 	private void connectToChosenDevice() {
-		window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)); // Zeiger zeigt Ladezustand an
 		SerialPort serialPort = ports[listOfDevices.getSelectedIndex()];
 		System.out.println(ports[listOfDevices.getSelectedIndex()].getDescriptivePortName());
 		if(serialPort.openPort()){
 			window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			System.out.println( serialPort.getDescriptivePortName() +" opened successfully.");
-			new OverviewWindow(serialPort);
+			new OverviewWindow(serialPort); // Nächstes Fenster
 		}
 		else {
 			JOptionPane.showMessageDialog(new JOptionPane(), "Port konnte nicht erreicht werden. Bitte nochmal versuchen.");

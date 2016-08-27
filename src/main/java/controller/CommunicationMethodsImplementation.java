@@ -225,6 +225,7 @@ public class CommunicationMethodsImplementation implements
 		System.out.println(newConfiguration.toString());
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
+		Boolean fehler = true;
 
 		String newFailureBehaviour = "";
 		if (newConfiguration.getFailureBehavior().equals("fallend")) {
@@ -234,63 +235,68 @@ public class CommunicationMethodsImplementation implements
 			newFailureBehaviour = "2";
 		}
 
-		if (connectedPort.isOpen()) {
-			connectedPort.writeBytes(newConfigurationCommand.getBytes(), 8);
-
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					Thread.sleep(500);
-				}
-				response = data.nextLine();
-				System.out.println("Antwort: " + response);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-
-			if (response.equals("4")) {
-
-				if (connectedPort.writeBytes(
-						new String(newConfiguration.getMeasurementValueStart()
-								+ "e"
-								+ newConfiguration.getMeasurementValueEnd()
-								+ "e" + newFailureBehaviour + "e")
-								.getBytes(StandardCharsets.UTF_8), 16) != -1) {
-					System.out.println("Bytes geschrieben: "
-							+ new String(new String(newConfiguration
-									.getMeasurementValueStart()
-									+ "e"
-									+ newConfiguration.getMeasurementValueEnd()
-									+ "e" + newFailureBehaviour + "e")
-									.getBytes(), StandardCharsets.UTF_8));
-				} else {
-					System.out.println("Fehler beim Bytes schreiben.");
-				}
+		while (fehler) {
+			if (connectedPort.isOpen()) {
+				connectedPort.writeBytes(newConfigurationCommand.getBytes(), 8);
 
 				try {
 					while (connectedPort.bytesAvailable() == 0) {
-
 						Thread.sleep(500);
 					}
-					System.out.println("nach Pause verfügbare Bytes: "
-							+ connectedPort.bytesAvailable());
-					response = "";
+					response = null;
 					response = data.nextLine();
 					System.out.println("Antwort: " + response);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
 
-			} else {
-				resetAVR(connectedPort);
-				newConfiguration(connectedPort, newConfiguration);
-			}
-			if (response.equals("4")) {
-				return true;
-			} else {
-				resetAVR(connectedPort);
-				newConfiguration(connectedPort, newConfiguration);
-			}
+				if (response.equals("4")) {
 
+					if (connectedPort.writeBytes(
+							new String(newConfiguration
+									.getMeasurementValueStart()
+									+ "e"
+									+ newConfiguration.getMeasurementValueEnd()
+									+ "e" + newFailureBehaviour + "e")
+									.getBytes(StandardCharsets.UTF_8), 16) != -1) {
+						System.out
+								.println("Bytes geschrieben: "
+										+ new String(
+												new String(
+														newConfiguration
+																.getMeasurementValueStart()
+																+ "e"
+																+ newConfiguration
+																		.getMeasurementValueEnd()
+																+ "e"
+																+ newFailureBehaviour
+																+ "e")
+														.getBytes(),
+												StandardCharsets.UTF_8));
+					} else {
+						System.out.println("Fehler beim Bytes schreiben.");
+					}
+
+					try {
+						while (connectedPort.bytesAvailable() == 0) {
+
+							Thread.sleep(500);
+						}
+						System.out.println("nach Pause verfügbare Bytes: "
+								+ connectedPort.bytesAvailable());
+						response = "";
+						response = data.nextLine();
+						System.out.println("Antwort: " + response);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					data.close();
+					fehler = false;
+					return true;
+				} else {
+					resetAVR(connectedPort);
+				}
+			}
 		}
 		data.close();
 		return false;
@@ -300,48 +306,48 @@ public class CommunicationMethodsImplementation implements
 			String simulatedTemperature) {
 		String response = null;
 		Scanner data = new Scanner(connectedPort.getInputStream());
+		Boolean fehler = true;
 
-		if (connectedPort.isOpen()) {
+		while (fehler) {
 
-			connectedPort.writeBytes(newSimulationCommand.getBytes(), 8);
+			if (connectedPort.isOpen()) {
 
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					Thread.sleep(500);
+				connectedPort.writeBytes(newSimulationCommand.getBytes(), 8);
+
+				try {
+					while (connectedPort.bytesAvailable() == 0) {
+						Thread.sleep(500);
+					}
+					response = data.nextLine();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
 				}
-				response = data.nextLine();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			if (response.equals("5")) {
-				connectedPort.writeBytes(
-						new String(simulatedTemperature + "e").getBytes(), 8);
+				if (response.equals("5")) {
+					connectedPort.writeBytes(new String(simulatedTemperature
+							+ "e").getBytes(), 8);
 
-				System.out.println("Bytes geschrieben: "
-						+ new String(simulatedTemperature.getBytes(),
-								StandardCharsets.UTF_8));
+					System.out.println("Bytes geschrieben: "
+							+ new String(simulatedTemperature.getBytes(),
+									StandardCharsets.UTF_8));
 
-			} else {
-				resetAVR(connectedPort);
-				newSimulation(connectedPort, simulatedTemperature);
-			}
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					Thread.sleep(500);
+					try {
+						while (connectedPort.bytesAvailable() == 0) {
+							Thread.sleep(500);
+						}
+						response = null;
+						response = data.nextLine();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					data.close();
+					fehler = false;
+					return true;
+				} else {
+					resetAVR(connectedPort);
 				}
-				response = null;
-				response = data.nextLine();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			if (response.equals("5")) {
-				data.close();
-				return true;
-			} else {
-				resetAVR(connectedPort);
-				newSimulation(connectedPort, simulatedTemperature);
 			}
 		}
+
 		data.close();
 		return false;
 	}
@@ -374,10 +380,7 @@ public class CommunicationMethodsImplementation implements
 		if (response.equals("6")) {
 			data.close();
 			return true;
-		} else {
-			resetAVR(connectedPort);
-			stopSimulation(connectedPort);
-		}
+		} 
 		data.close();
 		return false;
 	}
@@ -412,10 +415,7 @@ public class CommunicationMethodsImplementation implements
 			connectedPort.closePort();
 			data.close();
 			return true;
-		} else {
-			resetAVR(connectedPort);
-			closeTMU(connectedPort);
-		}
+		} 
 		data.close();
 		return false;
 	}

@@ -130,7 +130,6 @@ public class OverviewWindow implements ActionListener {
 
 	
 	private String getCurrentReading() {
-		communicationInterface.resetAVR(chosenPort);
 		return communicationInterface.getCurentMeasurementValue(chosenPort);
 	}
 	

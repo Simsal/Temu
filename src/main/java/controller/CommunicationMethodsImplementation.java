@@ -25,6 +25,7 @@ public class CommunicationMethodsImplementation implements
 
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
+		Boolean fehler = true;
 
 		ConfigurationInformation currentConfiguration = new ConfigurationInformation();
 		int counter = 0;
@@ -33,74 +34,63 @@ public class CommunicationMethodsImplementation implements
 		currentConfiguration.setMeasurementValueStartUnity("°C");
 
 		if (connectedPort.isOpen()) {
-			if (connectedPort.writeBytes(
-					readConfigurationCommand.getBytes(StandardCharsets.UTF_8),
-					8) != -1) {
-				System.out.println("Bytes geschrieben: "
-						+ new String(readConfigurationCommand.getBytes(),
-								StandardCharsets.UTF_8));
-			} else {
-				System.out.println("Fehler beim Bytes schreiben.");
-			}
+			while (fehler) {
+				connectedPort.writeBytes(readConfigurationCommand
+						.getBytes(StandardCharsets.UTF_8), 8);
 
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes:" + connectedPort.bytesAvailable());
-
-					Thread.sleep(500);
-				}
-				System.out.println("nach Pause verfügbare Bytes: " + connectedPort.bytesAvailable());
-				response = data.nextLine();
-				System.out.println("Antwort: "
-						+ new String(response.getBytes(),
-								StandardCharsets.UTF_8));
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-
-		}
-
-		if (response.equals("1")) {
-
-			while (data.hasNextLine()) {
 				try {
+					while (connectedPort.bytesAvailable() == 0) {
+						Thread.sleep(500);
+					}
+					response = data.nextLine();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 
-					if (counter == 0) {
-						String help = data.nextLine();
-						System.out.println("help: " + help);
-						currentConfiguration.setMeasurementValueStart(help);
-						System.out.println("Messwertbeginn: "
-								+ currentConfiguration
-										.getMeasurementValueStart());
-					}
-					if (counter == 1) {
-						currentConfiguration.setMeasurementValueEnd(data
-								.nextLine());
-					}
-					if (counter == 2) {
-						String message = data.nextLine();
-						if (message.equals("1")) {
-							currentConfiguration.setFailureBehavior("fallend");
-						}
-						if (message.equals("2")) {
-							currentConfiguration.setFailureBehavior("steigend");
-						}
-					}
-					counter++;
-					TimeUnit.SECONDS.sleep(1);
+				if (response.equals("1")) {
 
-				} catch (Exception e) {
+					while (data.hasNextLine()) {
+						try {
+
+							if (counter == 0) {
+								String help = data.nextLine();
+								System.out.println("help: " + help);
+								currentConfiguration
+										.setMeasurementValueStart(help);
+								System.out.println("Messwertbeginn: "
+										+ currentConfiguration
+												.getMeasurementValueStart());
+							}
+							if (counter == 1) {
+								currentConfiguration
+										.setMeasurementValueEnd(data.nextLine());
+							}
+							if (counter == 2) {
+								String message = data.nextLine();
+								if (message.equals("1")) {
+									currentConfiguration
+											.setFailureBehavior("fallend");
+								}
+								if (message.equals("2")) {
+									currentConfiguration
+											.setFailureBehavior("steigend");
+								}
+							}
+							counter++;
+							TimeUnit.SECONDS.sleep(1);
+
+						} catch (Exception e) {
+						}
+					}
+
+					fehler = false;
+
+				} else {
+					resetAVR(connectedPort);
 				}
 			}
-
 		}
 
-		else {
-			
-			resetAVR(connectedPort);
-			readConfiguration(connectedPort);
-			
-		}
 		data.close();
 
 		return currentConfiguration;
@@ -152,8 +142,7 @@ public class CommunicationMethodsImplementation implements
 
 				data.close();
 				return message;
-			}
-			else {
+			} else {
 				resetAVR(connectedPort);
 				getCurentMeasurementValue(connectedPort);
 			}
@@ -220,8 +209,7 @@ public class CommunicationMethodsImplementation implements
 
 					return "<html><p style='color:#F22C2C'>Messbereichsüber-/unterschreitung</p></html>";
 				}
-			}
-			else {
+			} else {
 				resetAVR(connectedPort);
 				getStatus(connectedPort);
 			}
@@ -232,7 +220,8 @@ public class CommunicationMethodsImplementation implements
 
 	}
 
-	public boolean newConfiguration(SerialPort connectedPort, ConfigurationInformation newConfiguration) {
+	public boolean newConfiguration(SerialPort connectedPort,
+			ConfigurationInformation newConfiguration) {
 		System.out.println(newConfiguration.toString());
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
@@ -260,13 +249,19 @@ public class CommunicationMethodsImplementation implements
 
 			if (response.equals("4")) {
 
-				if (connectedPort.writeBytes(new String(newConfiguration.getMeasurementValueStart() + "e" + newConfiguration.getMeasurementValueEnd() + "e" 
-						+ newFailureBehaviour + "e").getBytes(StandardCharsets.UTF_8), 16) != -1) {
+				if (connectedPort.writeBytes(
+						new String(newConfiguration.getMeasurementValueStart()
+								+ "e"
+								+ newConfiguration.getMeasurementValueEnd()
+								+ "e" + newFailureBehaviour + "e")
+								.getBytes(StandardCharsets.UTF_8), 16) != -1) {
 					System.out.println("Bytes geschrieben: "
-							+ new String(new String(
-									newConfiguration.getMeasurementValueStart() + "e" + newConfiguration.getMeasurementValueEnd() + "e" 
-											+ newFailureBehaviour + "e").getBytes(),
-									StandardCharsets.UTF_8));
+							+ new String(new String(newConfiguration
+									.getMeasurementValueStart()
+									+ "e"
+									+ newConfiguration.getMeasurementValueEnd()
+									+ "e" + newFailureBehaviour + "e")
+									.getBytes(), StandardCharsets.UTF_8));
 				} else {
 					System.out.println("Fehler beim Bytes schreiben.");
 				}
@@ -285,15 +280,13 @@ public class CommunicationMethodsImplementation implements
 					e1.printStackTrace();
 				}
 
-			}
-			else {
+			} else {
 				resetAVR(connectedPort);
 				newConfiguration(connectedPort, newConfiguration);
 			}
 			if (response.equals("4")) {
 				return true;
-			}
-			else {
+			} else {
 				resetAVR(connectedPort);
 				newConfiguration(connectedPort, newConfiguration);
 			}
@@ -321,14 +314,14 @@ public class CommunicationMethodsImplementation implements
 				e1.printStackTrace();
 			}
 			if (response.equals("5")) {
-				connectedPort.writeBytes(new String(simulatedTemperature + "e").getBytes(), 8);
+				connectedPort.writeBytes(
+						new String(simulatedTemperature + "e").getBytes(), 8);
 
 				System.out.println("Bytes geschrieben: "
 						+ new String(simulatedTemperature.getBytes(),
 								StandardCharsets.UTF_8));
 
-			}
-			else {
+			} else {
 				resetAVR(connectedPort);
 				newSimulation(connectedPort, simulatedTemperature);
 			}
@@ -344,8 +337,7 @@ public class CommunicationMethodsImplementation implements
 			if (response.equals("5")) {
 				data.close();
 				return true;
-			}
-			else {
+			} else {
 				resetAVR(connectedPort);
 				newSimulation(connectedPort, simulatedTemperature);
 			}
@@ -382,8 +374,7 @@ public class CommunicationMethodsImplementation implements
 		if (response.equals("6")) {
 			data.close();
 			return true;
-		}
-		else {
+		} else {
 			resetAVR(connectedPort);
 			stopSimulation(connectedPort);
 		}
@@ -421,8 +412,7 @@ public class CommunicationMethodsImplementation implements
 			connectedPort.closePort();
 			data.close();
 			return true;
-		}
-		else {
+		} else {
 			resetAVR(connectedPort);
 			closeTMU(connectedPort);
 		}

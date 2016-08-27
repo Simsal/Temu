@@ -119,6 +119,8 @@ public class OverviewWindow implements ActionListener {
 		stopConfiguration = new JButton("Konfigurationsprogramm schließen");
 		stopConfiguration.addActionListener(this);
 		window.add(stopConfiguration);
+		
+		window.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 		window.pack();
 		window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -126,14 +128,14 @@ public class OverviewWindow implements ActionListener {
 
 	}
 
-	private String getStatus() {
-		String statusValue = communicationInterface.getStatus(chosenPort);
-
-		return statusValue;
-	}
-
+	
 	private String getCurrentReading() {
+		communicationInterface.resetAVR(chosenPort);
 		return communicationInterface.getCurentMeasurementValue(chosenPort);
+	}
+	
+	private String getStatus() {
+		return communicationInterface.getStatus(chosenPort);
 	}
 
 	public void actionPerformed(ActionEvent e) {

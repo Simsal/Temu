@@ -129,6 +129,7 @@ public class CommunicationMethodsImplementation implements
 
 					Thread.sleep(500);
 				}
+				response = null;
 				response = data.nextLine();
 				System.out.println("Antwort: " + response);
 			} catch (InterruptedException e1) {
@@ -230,8 +231,7 @@ public class CommunicationMethodsImplementation implements
 
 	}
 
-	public boolean newConfiguration(SerialPort connectedPort,
-			ConfigurationInformation newConfiguration) {
+	public boolean newConfiguration(SerialPort connectedPort, ConfigurationInformation newConfiguration) {
 		System.out.println(newConfiguration.toString());
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
@@ -259,79 +259,12 @@ public class CommunicationMethodsImplementation implements
 
 			if (response.equals("4")) {
 
-				if (connectedPort.writeBytes(new String(
-						newConfiguration.getMeasurementValueStart() + "e").getBytes(
-								StandardCharsets.UTF_8), 8) != -1) {
+				if (connectedPort.writeBytes(new String(newConfiguration.getMeasurementValueStart() + "e" + newConfiguration.getMeasurementValueEnd() + "e" 
+						+ newFailureBehaviour + "e").getBytes(StandardCharsets.UTF_8), 16) != -1) {
 					System.out.println("Bytes geschrieben: "
-							+ new String(newConfiguration
-									.getMeasurementValueStart().getBytes(),
-									StandardCharsets.UTF_8));
-					System.out.println("Bytes geschrieben: "
-							+ new String("e".getBytes()));
-				} else {
-					System.out.println("Fehler beim Bytes schreiben.");
-				}
-
-				try {
-					while (connectedPort.bytesAvailable() == 0) {
-
-						Thread.sleep(500);
-					}
-					System.out.println("nach Pause verfügbare Bytes: "
-							+ connectedPort.bytesAvailable());
-					response = "";
-					response = data.nextLine();
-					System.out.println("Antwort: " + response);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-
-			}
-			else {
-				resetAVR(connectedPort);
-				newConfiguration(connectedPort, newConfiguration);
-			}
-			if (response.equals("4")) {
-
-				if (connectedPort.writeBytes(new String(
-						newConfiguration.getMeasurementValueEnd() + "e").getBytes(
-								StandardCharsets.UTF_8), 8) != -1) {
-					System.out.println("Bytes geschrieben: "
-							+ new String(newConfiguration
-									.getMeasurementValueEnd().getBytes(),
-									StandardCharsets.UTF_8));
-					System.out.println("Bytes geschrieben: "
-							+ new String("e".getBytes()));
-				} else {
-					System.out.println("Fehler beim Bytes schreiben.");
-				}
-
-				try {
-					while (connectedPort.bytesAvailable() == 0) {
-
-						Thread.sleep(500);
-					}
-					System.out.println("nach Pause verfügbare Bytes: "
-							+ connectedPort.bytesAvailable());
-					response = "";
-					response = data.nextLine();
-					System.out.println("Antwort: " + response);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-
-			}
-			else {
-				resetAVR(connectedPort);
-				newConfiguration(connectedPort, newConfiguration);
-			}
-			if (response.equals("4")) {
-
-				if (connectedPort
-						.writeBytes(new String(newFailureBehaviour + "e")
-								.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-					System.out.println("Bytes geschrieben: "
-							+ new String(new String(newFailureBehaviour + "e").getBytes(),
+							+ new String(new String(
+									newConfiguration.getMeasurementValueStart() + "e" + newConfiguration.getMeasurementValueEnd() + "e" 
+											+ newFailureBehaviour + "e").getBytes(),
 									StandardCharsets.UTF_8));
 				} else {
 					System.out.println("Fehler beim Bytes schreiben.");

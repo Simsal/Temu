@@ -9,8 +9,7 @@ import model.ConfigurationInformation;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-public class CommunicationMethodsImplementation implements
-		CommunicationInterface {
+public class CommunicationMethodsImplementation implements CommunicationInterface {
 
 	String readConfigurationCommand = "1";
 	String getCurentMeasurementValueCommand = "2";
@@ -35,8 +34,7 @@ public class CommunicationMethodsImplementation implements
 
 		if (connectedPort.isOpen()) {
 			while (fehler) {
-				connectedPort.writeBytes(readConfigurationCommand
-						.getBytes(StandardCharsets.UTF_8), 8);
+				connectedPort.writeBytes(readConfigurationCommand.getBytes(StandardCharsets.UTF_8), 8);
 
 				try {
 					while (connectedPort.bytesAvailable() == 0) {
@@ -55,25 +53,20 @@ public class CommunicationMethodsImplementation implements
 							if (counter == 0) {
 								String help = data.nextLine();
 								System.out.println("help: " + help);
-								currentConfiguration
-										.setMeasurementValueStart(help);
-								System.out.println("Messwertbeginn: "
-										+ currentConfiguration
-												.getMeasurementValueStart());
+								currentConfiguration.setMeasurementValueStart(help);
+								System.out
+										.println("Messwertbeginn: " + currentConfiguration.getMeasurementValueStart());
 							}
 							if (counter == 1) {
-								currentConfiguration
-										.setMeasurementValueEnd(data.nextLine());
+								currentConfiguration.setMeasurementValueEnd(data.nextLine());
 							}
 							if (counter == 2) {
 								String message = data.nextLine();
 								if (message.equals("1")) {
-									currentConfiguration
-											.setFailureBehavior("fallend");
+									currentConfiguration.setFailureBehavior("fallend");
 								}
 								if (message.equals("2")) {
-									currentConfiguration
-											.setFailureBehavior("steigend");
+									currentConfiguration.setFailureBehavior("steigend");
 								}
 							}
 							counter++;
@@ -104,19 +97,16 @@ public class CommunicationMethodsImplementation implements
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(getCurentMeasurementValueCommand
-					.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+			if (connectedPort.writeBytes(getCurentMeasurementValueCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
 				System.out.println("Bytes geschrieben: "
-						+ new String(getCurentMeasurementValueCommand
-								.getBytes(), StandardCharsets.UTF_8));
+						+ new String(getCurentMeasurementValueCommand.getBytes(), StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 
 			try {
 				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes: "
-							+ connectedPort.bytesAvailable());
+					System.out.println("Verfügbare Bytes: " + connectedPort.bytesAvailable());
 
 					Thread.sleep(500);
 				}
@@ -161,18 +151,15 @@ public class CommunicationMethodsImplementation implements
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(
-					getStatusCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println("Bytes geschrieben: "
-						+ new String(getStatusCommand.getBytes(),
-								StandardCharsets.UTF_8));
+			if (connectedPort.writeBytes(getStatusCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				System.out.println(
+						"Bytes geschrieben: " + new String(getStatusCommand.getBytes(), StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 			try {
 				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes:"
-							+ connectedPort.bytesAvailable());
+					System.out.println("Verfügbare Bytes:" + connectedPort.bytesAvailable());
 					Thread.sleep(500);
 				}
 				response = data.nextLine();
@@ -220,8 +207,7 @@ public class CommunicationMethodsImplementation implements
 
 	}
 
-	public boolean newConfiguration(SerialPort connectedPort,
-			ConfigurationInformation newConfiguration) {
+	public boolean newConfiguration(SerialPort connectedPort, ConfigurationInformation newConfiguration) {
 		System.out.println(newConfiguration.toString());
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
@@ -252,26 +238,16 @@ public class CommunicationMethodsImplementation implements
 
 				if (response.equals("4")) {
 
-					if (connectedPort.writeBytes(
-							new String(newConfiguration
-									.getMeasurementValueStart()
-									+ "e"
-									+ newConfiguration.getMeasurementValueEnd()
-									+ "e" + newFailureBehaviour + "e")
-									.getBytes(StandardCharsets.UTF_8), 16) != -1) {
+					if (connectedPort.writeBytes(new String(newConfiguration.getMeasurementValueStart() + "e"
+							+ newConfiguration.getMeasurementValueEnd() + "e" + newFailureBehaviour + "e")
+									.getBytes(StandardCharsets.UTF_8),
+							16) != -1) {
 						System.out
-								.println("Bytes geschrieben: "
-										+ new String(
-												new String(
-														newConfiguration
-																.getMeasurementValueStart()
-																+ "e"
-																+ newConfiguration
-																		.getMeasurementValueEnd()
-																+ "e"
-																+ newFailureBehaviour
-																+ "e")
-														.getBytes(),
+								.println(
+										"Bytes geschrieben: " + new String(
+												new String(newConfiguration.getMeasurementValueStart() + "e"
+														+ newConfiguration.getMeasurementValueEnd() + "e"
+														+ newFailureBehaviour + "e").getBytes(),
 												StandardCharsets.UTF_8));
 					} else {
 						System.out.println("Fehler beim Bytes schreiben.");
@@ -282,8 +258,7 @@ public class CommunicationMethodsImplementation implements
 
 							Thread.sleep(500);
 						}
-						System.out.println("nach Pause verfügbare Bytes: "
-								+ connectedPort.bytesAvailable());
+						System.out.println("nach Pause verfügbare Bytes: " + connectedPort.bytesAvailable());
 						response = "";
 						response = data.nextLine();
 						System.out.println("Antwort: " + response);
@@ -302,8 +277,7 @@ public class CommunicationMethodsImplementation implements
 		return false;
 	}
 
-	public boolean newSimulation(SerialPort connectedPort,
-			String simulatedTemperature) {
+	public boolean newSimulation(SerialPort connectedPort, String simulatedTemperature) {
 		String response = null;
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		Boolean fehler = true;
@@ -323,12 +297,10 @@ public class CommunicationMethodsImplementation implements
 					e1.printStackTrace();
 				}
 				if (response.equals("5")) {
-					connectedPort.writeBytes(new String(simulatedTemperature
-							+ "e").getBytes(), 8);
+					connectedPort.writeBytes(new String(simulatedTemperature + "e").getBytes(), 8);
 
 					System.out.println("Bytes geschrieben: "
-							+ new String(simulatedTemperature.getBytes(),
-									StandardCharsets.UTF_8));
+							+ new String(simulatedTemperature.getBytes(), StandardCharsets.UTF_8));
 
 					try {
 						while (connectedPort.bytesAvailable() == 0) {
@@ -356,31 +328,39 @@ public class CommunicationMethodsImplementation implements
 
 		String response = null;
 		Scanner data = new Scanner(connectedPort.getInputStream());
+		Boolean fehler = true;
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(
-					stopSimulationCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println("Bytes geschrieben: "
-						+ new String(stopSimulationCommand.getBytes(),
-								StandardCharsets.UTF_8));
-			} else {
-				System.out.println("Fehler beim Bytes schreiben.");
+			while (fehler) {
+
+				if (connectedPort.writeBytes(stopSimulationCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+					System.out.println("Bytes geschrieben: "
+							+ new String(stopSimulationCommand.getBytes(), StandardCharsets.UTF_8));
+				} else {
+					System.out.println("Fehler beim Bytes schreiben.");
+				}
+
+				try {
+					while (connectedPort.bytesAvailable() == 0) {
+						Thread.sleep(500);
+					}
+					response = data.nextLine();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+			if (response.equals("6")) {
+				data.close();
+				fehler = false;
+				return true;
 			}
 
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					Thread.sleep(500);
-				}
-				response = data.nextLine();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+			else {
+				resetAVR(connectedPort);
 			}
 		}
-		if (response.equals("6")) {
-			data.close();
-			return true;
-		} 
+
 		data.close();
 		return false;
 	}
@@ -392,11 +372,9 @@ public class CommunicationMethodsImplementation implements
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(
-					stopTMUCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println("Bytes geschrieben: "
-						+ new String(stopTMUCommand.getBytes(),
-								StandardCharsets.UTF_8));
+			if (connectedPort.writeBytes(stopTMUCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				System.out
+						.println("Bytes geschrieben: " + new String(stopTMUCommand.getBytes(), StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
@@ -415,24 +393,25 @@ public class CommunicationMethodsImplementation implements
 			connectedPort.closePort();
 			data.close();
 			return true;
-		} 
+		}
 		data.close();
 		return false;
 	}
 
 	public void resetAVR(SerialPort connectedPort) {
+		Scanner data = new Scanner(connectedPort.getInputStream());
 
 		if (connectedPort.isOpen()) {
-
-			if (connectedPort.writeBytes(
-					resetCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println("Bytes geschrieben: "
-						+ new String(resetCommand.getBytes(),
-								StandardCharsets.UTF_8));
+			while (connectedPort.bytesAvailable() != 0) {
+				data.nextLine();
+			}
+			if (connectedPort.writeBytes(resetCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+				System.out.println("Bytes geschrieben: " + new String(resetCommand.getBytes(), StandardCharsets.UTF_8));
 			} else {
 				System.out.println("Fehler beim Bytes schreiben.");
 			}
 
 		}
+		data.close();
 	}
 }

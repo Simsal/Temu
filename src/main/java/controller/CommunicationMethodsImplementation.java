@@ -24,7 +24,7 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
-		Boolean fehler = true;
+		boolean fehler = true;
 
 		ConfigurationInformation currentConfiguration = new ConfigurationInformation();
 		int counter = 0;
@@ -94,47 +94,49 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
 		String message = null;
+		boolean fehler = true;
 
 		if (connectedPort.isOpen()) {
-
-			if (connectedPort.writeBytes(getCurentMeasurementValueCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println("Bytes geschrieben: "
-						+ new String(getCurentMeasurementValueCommand.getBytes(), StandardCharsets.UTF_8));
-			} else {
-				System.out.println("Fehler beim Bytes schreiben.");
-			}
-
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes: " + connectedPort.bytesAvailable());
-
-					Thread.sleep(500);
+			while (fehler) {
+				if (connectedPort.writeBytes(getCurentMeasurementValueCommand.getBytes(StandardCharsets.UTF_8),
+						8) != -1) {
+					System.out.println("Bytes geschrieben: "
+							+ new String(getCurentMeasurementValueCommand.getBytes(), StandardCharsets.UTF_8));
+				} else {
+					System.out.println("Fehler beim Bytes schreiben.");
 				}
-				response = null;
-				response = data.nextLine();
-				System.out.println("Antwort: " + response);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
 
-			if (response.equals("2")) {
-				System.out.println(response.equals("2"));
+				try {
+					while (connectedPort.bytesAvailable() == 0) {
+						System.out.println("Verfügbare Bytes: " + connectedPort.bytesAvailable());
 
-				while (data.hasNextLine()) {
-					try {
-
-						message = data.nextLine();
-						System.out.println(Integer.parseInt(message));
-
-					} catch (Exception e) {
+						Thread.sleep(500);
 					}
+					response = null;
+					response = data.nextLine();
+					System.out.println("Antwort: " + response);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
 				}
 
-				data.close();
-				return message;
-			} else {
-				resetAVR(connectedPort);
-				getCurentMeasurementValue(connectedPort);
+				if (response.equals("2")) {
+					System.out.println(response.equals("2"));
+
+					while (data.hasNextLine()) {
+						try {
+
+							message = data.nextLine();
+							System.out.println(Integer.parseInt(message));
+
+						} catch (Exception e) {
+						}
+					}
+					fehler = false;
+					data.close();
+					return message;
+				} else {
+					resetAVR(connectedPort);
+				}
 			}
 
 		}
@@ -148,59 +150,61 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
 		String message = null;
+		boolean fehler = true;
 
 		if (connectedPort.isOpen()) {
 
-			if (connectedPort.writeBytes(getStatusCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
-				System.out.println(
-						"Bytes geschrieben: " + new String(getStatusCommand.getBytes(), StandardCharsets.UTF_8));
-			} else {
-				System.out.println("Fehler beim Bytes schreiben.");
-			}
-			try {
-				while (connectedPort.bytesAvailable() == 0) {
-					System.out.println("Verfügbare Bytes:" + connectedPort.bytesAvailable());
-					Thread.sleep(500);
+			while (fehler) {
+				if (connectedPort.writeBytes(getStatusCommand.getBytes(StandardCharsets.UTF_8), 8) != -1) {
+					System.out.println(
+							"Bytes geschrieben: " + new String(getStatusCommand.getBytes(), StandardCharsets.UTF_8));
+				} else {
+					System.out.println("Fehler beim Bytes schreiben.");
 				}
-				response = data.nextLine();
-				System.out.println("Antwort: " + response);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-
-			if (response.equals("3")) {
-
-				while (data.hasNextLine()) {
-					try {
-
-						message = data.nextLine();
-						System.out.println(Integer.parseInt(message));
-
-					} catch (Exception e) {
+				try {
+					while (connectedPort.bytesAvailable() == 0) {
+						System.out.println("Verfügbare Bytes:" + connectedPort.bytesAvailable());
+						Thread.sleep(500);
 					}
+					response = data.nextLine();
+					System.out.println("Antwort: " + response);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
 				}
-				data.close();
 
-				if (Objects.equals(Integer.parseInt(message), 1)) {
-					return "<html><p style='color:#04B431'>OK</p></html>";
-				}
-				if (Objects.equals(Integer.parseInt(message), 2)) {
+				if (response.equals("3")) {
 
-					return "<html><p style='color:#F22C2C'>Kabelbruch Sensor</p></html>";
-				}
-				if (Objects.equals(Integer.parseInt(message), 3)) {
+					while (data.hasNextLine()) {
+						try {
 
-					return "<html><p style='color:#F22C2C'>Kurzschluss Sensor</p></html>";
-				}
-				if (Objects.equals(Integer.parseInt(message), 4)) {
+							message = data.nextLine();
+							System.out.println(Integer.parseInt(message));
 
-					return "<html><p style='color:#F22C2C'>Messbereichsüber-/unterschreitung</p></html>";
+						} catch (Exception e) {
+						}
+					}
+					data.close();
+					fehler = false;
+
+					if (Objects.equals(Integer.parseInt(message), 1)) {
+						return "<html><p style='color:#04B431'>OK</p></html>";
+					}
+					if (Objects.equals(Integer.parseInt(message), 2)) {
+
+						return "<html><p style='color:#F22C2C'>Kabelbruch Sensor</p></html>";
+					}
+					if (Objects.equals(Integer.parseInt(message), 3)) {
+
+						return "<html><p style='color:#F22C2C'>Kurzschluss Sensor</p></html>";
+					}
+					if (Objects.equals(Integer.parseInt(message), 4)) {
+
+						return "<html><p style='color:#F22C2C'>Messbereichsüber-/unterschreitung</p></html>";
+					}
+				} else {
+					resetAVR(connectedPort);
 				}
-			} else {
-				resetAVR(connectedPort);
-				getStatus(connectedPort);
 			}
-
 		}
 
 		return "<html><p style='color:#F22C2C'>Status auslesen fehlgeschlagen</p></html>";
@@ -211,7 +215,7 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 		System.out.println(newConfiguration.toString());
 		Scanner data = new Scanner(connectedPort.getInputStream());
 		String response = null;
-		Boolean fehler = true;
+		boolean fehler = true;
 
 		String newFailureBehaviour = "";
 		if (newConfiguration.getFailureBehavior().equals("fallend")) {
@@ -280,7 +284,7 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 	public boolean newSimulation(SerialPort connectedPort, String simulatedTemperature) {
 		String response = null;
 		Scanner data = new Scanner(connectedPort.getInputStream());
-		Boolean fehler = true;
+		boolean fehler = true;
 
 		while (fehler) {
 
@@ -328,7 +332,7 @@ public class CommunicationMethodsImplementation implements CommunicationInterfac
 
 		String response = null;
 		Scanner data = new Scanner(connectedPort.getInputStream());
-		Boolean fehler = true;
+		boolean fehler = true;
 
 		if (connectedPort.isOpen()) {
 
